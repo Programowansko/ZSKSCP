@@ -3,9 +3,13 @@
 Projekt z programowania 2020 - klasa 3B
 </p>
 
-### 🏠 [Link do całego projektu](https://drive.google.com/file/d/1CPozBtG5G2p6oYu_VdPmE7vY9N81rQn4/view?usp=sharing)
 
-### ✨ [Działający build](a)
+
+### 🏠 [Link do projektu (bez folderu .vs)](https://drive.google.com/file/d/1B9bH6grttDKeQeSx-NWN_BKeVBkFZ7VN/view?usp=sharing)
+
+### ♾️ [Link do folderu .vs](https://drive.google.com/file/d/1nY1ax97Cu7sY4N6KM929qqsNUgPi4peI/view?usp=sharing)
+
+### ✨ [Działający build](https://drive.google.com/file/d/17CtHYWXocPLYenFa4pdReFZNAw9L7sjh/view?usp=sharing)
 
 ## Grupa
 
