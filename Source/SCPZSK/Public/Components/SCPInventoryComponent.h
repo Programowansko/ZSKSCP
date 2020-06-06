@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Kacper Janas
 
 #pragma once
 
@@ -20,15 +21,19 @@ public:
 	// Sets default values for this component's properties
 	USCPInventoryComponent();
 
+	/*Add specified item to inventory*/
 	UFUNCTION(BlueprintCallable)
 	bool AddItem(USCPItem* Item);
 
+	/*Remove specified item from inventory*/
 	UFUNCTION(BlueprintCallable)
 	bool RemoveItem(USCPItem* Item);
 
+	/*Default items in player's inventory*/
 	UPROPERTY(EditDefaultsOnly, Instanced)
 	TArray<USCPItem*> DefaultItems;
 
+	/*Max inventory capacity*/
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
 	int32 Capacity;
 

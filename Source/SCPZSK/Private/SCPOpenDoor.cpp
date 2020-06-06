@@ -1,4 +1,5 @@
-﻿// Wiktor Ludwiniak 2020
+﻿// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Wiktor Ludwiniak
 
 
 #include "SCPOpenDoor.h"
@@ -6,6 +7,7 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Components/PrimitiveComponent.h"
+
 
 // Sets default values for this component's properties
 USCPOpenDoor::USCPOpenDoor()
@@ -27,10 +29,26 @@ void USCPOpenDoor::BeginPlay()
 	InitialHeight = CurrentHeight;
 	OpenHeight += CurrentHeight;
 	/*
-	Wylicza i ustawia odpowiednie wartoœci otwierania i zamykania
+	Wylicza i ustawia odpowiednie wartości otwierania i zamykania
 	*/
 
 
+}
+
+void USCPOpenDoor::Interact()
+{
+	if (!bIsOpen)//Sprawdza czy drzwi nie są otwarte 
+	{
+		if (GetCurrent() == GetOpenHeight()) {//Zmieni flagę obiektu gdy będzie w pełni otwarty
+			bIsOpen = true;
+		}
+	}
+	else
+	{
+		if (GetCurrent() == GetInitial()) {//Zmieni flagę obiektu gdy będzie w pełni zamknięty
+			bIsOpen = false;
+		}
+	}
 }
 
 

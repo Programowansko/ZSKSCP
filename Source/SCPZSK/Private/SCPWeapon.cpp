@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Kacper Janas
 
 
 #include "SCPWeapon.h"
@@ -53,10 +54,13 @@ void ASCPWeapon::BeginPlay()
 
 void ASCPWeapon::Fire()
 {
+	UE_LOG(LogTemp, Log, TEXT("Fire()"));
+	
 	// Trace the world, from pawn eyes to croshair location
 
-	if (Role < ROLE_Authority)
+	if (!HasAuthority())
 	{
+		UE_LOG(LogTemp, Log, TEXT("ServerFire() call"));
 		ServerFire();
 	}
 
@@ -117,7 +121,7 @@ void ASCPWeapon::Fire()
 
 		LastFiredTime = GetWorld()->TimeSeconds;
 
-		if (Role == ROLE_Authority)
+		if (HasAuthority())
 		{
 			HitScanTrace.TraceTo = TracerEndPoint;
 			HitScanTrace.SurfaceType = SurfaceType;
@@ -129,6 +133,7 @@ void ASCPWeapon::Fire()
 
 void ASCPWeapon::ServerFire_Implementation()
 {
+	UE_LOG(LogTemp, Log, TEXT("ServerFire()"));
 	Fire();
 }
 

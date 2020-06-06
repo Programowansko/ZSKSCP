@@ -5,23 +5,26 @@
 
 #include "CoreMinimal.h"
 #include "SCPItem.h"
-#include "SCPHealthItem.generated.h"
+#include "SCPWeaponItem.generated.h"
+
+
+class ASCPWeapon;
 
 /**
  * 
  */
 UCLASS()
-class SCPZSK_API USCPHealthItem : public USCPItem
+class SCPZSK_API USCPWeaponItem : public USCPItem
 {
 	GENERATED_BODY()
 
 public:
 
-	/* Amount of Health to heal */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item", meta = (ClampMin = 0.0))
-	float HealAmount;
+	/* Class of weapon to equip */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
+	TSubclassOf<ASCPWeapon> WeaponClass;
 
 protected:
-	
+
 	virtual void Use(class ASCPCharacter* Character) override;
 };

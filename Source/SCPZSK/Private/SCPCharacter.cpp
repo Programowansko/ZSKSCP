@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Kacper Janas, Filip Nowicki(Voice chat)
 
 
 #include "SCPCharacter.h"
@@ -39,6 +40,24 @@ ASCPCharacter::ASCPCharacter()
 	InventoryComp->Capacity = 8;
 
 	RifleAmmoComp = CreateDefaultSubobject<USCPAmmoComponent>(TEXT("RifleAmmoComp"));
+
+	VoiceCapture = FVoiceModule::Get().CreateVoiceCapture();
+
+	VoiceCaptureAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("VoiceCaptureAudioComponent"));
+	VoiceCaptureAudioComponent->SetupAttachment(RootComponent);
+	VoiceCaptureAudioComponent->bAutoActivate = false;
+	VoiceCaptureAudioComponent->bAlwaysPlay = false;
+	VoiceCaptureAudioComponent->PitchMultiplier = 0.85f;
+	VoiceCaptureAudioComponent->VolumeMultiplier = 5.f;
+
+	VoiceCaptureSoundWaveProcedural = NewObject<USoundWaveProcedural>();
+	VoiceCaptureSoundWaveProcedural->NumChannels = 1;
+	VoiceCaptureSoundWaveProcedural->Duration = INDEFINITELY_LOOPING_DURATION;
+	VoiceCaptureSoundWaveProcedural->SoundGroup = SOUNDGROUP_Voice;
+	VoiceCaptureSoundWaveProcedural->bLooping = false;
+	VoiceCaptureSoundWaveProcedural->bProcedural = true;
+	VoiceCaptureSoundWaveProcedural->Pitch = 0.85f;
+	VoiceCaptureSoundWaveProcedural->Volume = 5.f;
 }
 
 // Called when the game starts or when spawned
@@ -143,7 +162,7 @@ void ASCPCharacter::UseItem(USCPItem* Item)
 	}
 }
 
-void ASCPCharacter::EquipWeapon(TSubclassOf<ASCPWeapon> ClassOfWeaponToEquip)
+void ASCPCharacter::EquipWeapon_Implementation(TSubclassOf<ASCPWeapon> ClassOfWeaponToEquip)
 {
 	if (Role == ROLE_Authority && ClassOfWeaponToEquip != CurrentWeaponClass)
 	{
@@ -160,6 +179,12 @@ void ASCPCharacter::EquipWeapon(TSubclassOf<ASCPWeapon> ClassOfWeaponToEquip)
 			CurrentWeaponClass = ClassOfWeaponToEquip;
 			bWeaponEquipped = true;
 		}
+	}
+	else if(ClassOfWeaponToEquip == CurrentWeaponClass)
+	{
+		CurrentWeaponClass = nullptr;
+		bWeaponEquipped = false;
+		CurrentWeapon->Destroy();
 	}
 }
 
@@ -267,6 +292,59 @@ void ASCPCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(ASCPCharacter, CurrentWeapon);
 	DOREPLIFETIME(ASCPCharacter, bDied);
 	DOREPLIFETIME(ASCPCharacter, bWeaponEquipped);
+}
+
+void ASCPCharacter::VoiceCaptureTick()
+{
+	VoiceCapture->Start();
+
+	if (!VoiceCapture.IsValid())
+		return;
+	uint32 VoiceCaptureBytesAvailable = 0;
+	EVoiceCaptureState::Type CaptureState = VoiceCapture->GetCaptureState(VoiceCaptureBytesAvailable);
+
+	VoiceCaptureBuffer.Reset();
+	PlayVoiceCaptureFlag = false;
+
+	if (CaptureState == EVoiceCaptureState::Ok && VoiceCaptureBytesAvailable > 0)
+	{
+		int16_t VoiceCaptureSample;
+		uint32 VoiceCaptureReadBytes;
+		float VoiceCaptureTotalSquared = 0;
+
+		VoiceCaptureBuffer.SetNumUninitialized(VoiceCaptureBytesAvailable);
+
+		VoiceCapture->GetVoiceData(VoiceCaptureBuffer.GetData(), VoiceCaptureBytesAvailable, VoiceCaptureReadBytes);
+
+		for (uint32 i = 0; i < (VoiceCaptureReadBytes / 2); i++)
+		{
+			VoiceCaptureSample = (VoiceCaptureBuffer[i * 2 + 1] << 8) | VoiceCaptureBuffer[i * 2];
+			VoiceCaptureTotalSquared += ((float)VoiceCaptureSample * (float)VoiceCaptureSample);
+		}
+
+		float VoiceCaptureMeanSquare = (2 * (VoiceCaptureTotalSquared / VoiceCaptureBuffer.Num()));
+		float VoiceCaptureRms = FMath::Sqrt(VoiceCaptureMeanSquare);
+		float VoiceCaptureFinalVolume = ((VoiceCaptureRms / 32768.0) * 200.f);
+
+		VoiceCaptureVolume = VoiceCaptureFinalVolume;
+
+		VoiceCaptureSoundWaveProcedural->QueueAudio(VoiceCaptureBuffer.GetData(), VoiceCaptureReadBytes);
+		VoiceCaptureAudioComponent->SetSound(VoiceCaptureSoundWaveProcedural);
+
+		PlayVoiceCaptureFlag = true;
+	}
+}
+
+void ASCPCharacter::PlayVoiceCapture()
+{
+	if (!VoiceCaptureAudioComponent->IsPlaying())
+	{
+		VoiceCaptureAudioComponent->FadeOut(0.3f, 0.f);
+	}
+	if (VoiceCaptureAudioComponent->IsPlaying())
+		return;
+	VoiceCaptureAudioComponent->Play();
 }

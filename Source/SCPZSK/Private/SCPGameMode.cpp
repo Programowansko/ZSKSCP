@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Kacper Janas
 
 
 #include "SCPGameMode.h"
@@ -100,6 +101,8 @@ void ASCPGameMode::StartPlay()
 {
 	Super::StartPlay();
 
+	SpawnTilesets();
+
 	PrepareForNextSpawnWave();
 }
 
@@ -108,4 +111,27 @@ void ASCPGameMode::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	CheckEndGame();
+}
+
+void ASCPGameMode::SpawnTilesets_Implementation()
+{
+	UWorld* WRLD = GetWorld();
+
+	FVector location = FVector(0.0f, 0.0f, 0.0f);
+	FRotator rotation = FRotator(0.0f, 0.0f, 0.0f);
+
+	if(TilesetToSpawn[0])
+		WRLD->SpawnActor(TilesetToSpawn[0], &location, &rotation); //Spawns HCZ
+	else
+		UE_LOG(LogTemp, Log, TEXT("TilesetToSpawn[0] is nullptr"));
+
+	location = FVector(20000.0f, 0.0f, 0.0f);
+	rotation = FRotator(0.0f, 0.0f, 0.0f);
+
+	if (TilesetToSpawn[1])
+		WRLD->SpawnActor(TilesetToSpawn[1], &location, &rotation); //Spawns LCZ
+	else
+		UE_LOG(LogTemp, Log, TEXT("TilesetToSpawn[1] is nullptr"));
+
+
 }

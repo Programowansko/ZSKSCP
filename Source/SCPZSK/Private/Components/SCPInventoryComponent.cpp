@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Kacper Janas
 
 
 #include "Components/SCPInventoryComponent.h"
@@ -13,6 +14,7 @@ USCPInventoryComponent::USCPInventoryComponent()
 
 bool USCPInventoryComponent::AddItem(USCPItem* Item)
 {
+	// Check if player have capacity for item
 	if(Items.Num() >= Capacity || !Item)
 	{
 		return false;

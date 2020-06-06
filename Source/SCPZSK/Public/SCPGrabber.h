@@ -1,14 +1,11 @@
-﻿// Wiktor Ludwiniak 2020
+﻿// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Wiktor Ludwiniak
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-
-
 #include "SCPGrabber.generated.h"
-
-
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SCPZSK_API USCPGrabber : public UActorComponent
@@ -27,13 +24,15 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	/*Zasięg postaci z której może aktywować*/
+	UPROPERTY(EditDefaultsOnly, Category = "Grabber")
+	float Reach = 200.f;
 
-	float Reach = 100.f; //Zasi�g postaci z kt�rej mo�e aktywowa�
 	UInputComponent* InputComponent = nullptr;
 
 
-	void SetupInputComponent(); //Funkcja kt�ra binduje okre�lon� akcje do przycisku
-	void ToggleDoor();//Wywo�uje otwarcie/zamkni�cie drzwi
-	FVector GetLineTraceEnd(FVector& PlayerViewPointLocation, FRotator& PlayerViewPointRotation) const; //Zwraca "zasi�g"
+	void SetupInputComponent(); //Funkcja która binduje określoną akcje do przycisku
+	void ToggleDoor();//Wywołuje otwarcie/zamknięcie drzwi
+	FVector GetLineTraceEnd(FVector& PlayerViewPointLocation, FRotator& PlayerViewPointRotation) const; //Zwraca "zasięg"
 
 };

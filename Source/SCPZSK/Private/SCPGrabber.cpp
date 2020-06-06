@@ -1,10 +1,12 @@
-﻿// Wiktor Ludwiniak 2020
+﻿// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Wiktor Ludwiniak
 
 #include "SCPGrabber.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
 #include "Containers/Array.h"
-#include "SCPOpenDoor.h"
+#include "SCPInteractable.h"
+#include "DrawDebugHelpers.h"
 
 
 #define OUT
@@ -30,18 +32,17 @@ void USCPGrabber::SetupInputComponent()
 {
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();//Pobiera komponent odpowiedzialny za interakcje
 	if (InputComponent) {
-		InputComponent->BindAction("ToogleDoor", IE_Pressed, this, &USCPGrabber::ToggleDoor);//Przypisanie pod przyci�ni�cie wykonywania danej funkcji. Pierwszym sk�adnikiem jest nazwa zmapowanej akcji ustawionej w engine->input
+		InputComponent->BindAction("Interact", IE_Pressed, this, &USCPGrabber::ToggleDoor);//Przypisanie pod przyci�ni�cie wykonywania danej funkcji. Pierwszym sk�adnikiem jest nazwa zmapowanej akcji ustawionej w engine->input
 	}
 
 }
-
 
 
 void USCPGrabber::ToggleDoor()
 {
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
-	FVector LineTraceEnd = GetLineTraceEnd(PlayerViewPointLocation, PlayerViewPointRotation); //Zwraca "zasi�g"
+	FVector LineTraceEnd = GetLineTraceEnd(PlayerViewPointLocation, PlayerViewPointRotation); //Zwraca "zasięg"
 
 	FCollisionQueryParams TraceParam(FName(TEXT("")), false, GetOwner());
 	FHitResult Hit;
@@ -52,28 +53,17 @@ void USCPGrabber::ToggleDoor()
 		LineTraceEnd,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParam
-	);//Pobiera obiekt w naszym zasi�gu i przypisuje go do pierwszego argumentu
+	);//Pobiera obiekt w naszym zasięgu i przypisuje go do pierwszego argumentu
 
-	if (Hit.GetActor()) {
-		USCPOpenDoor* actor = Hit.GetActor()->FindComponentByClass<USCPOpenDoor>();//Pobiera wska�nik na klas� USCPOpenDoor Zawartej w aktorze
-		if (actor) {//sprawdza czy aktor zawiera� ww. klase 
-			if (!actor->bIsOpen)//Sprawdza czy drzwi nie s� otwarte 
-			{
-				if (actor->GetCurrent() == actor->GetOpenHeight()) {//Zmieni flag� obiektu gdy b�dzie w pe�ni z otwarty
-					actor->bIsOpen = true;
-				}
-			}
-			else
-			{
-				if (actor->GetCurrent() == actor->GetInitial()) {//Zmieni flag� obiektu gdy b�dzie w pe�ni zamkni�ty
-					actor->bIsOpen = false;
-				}
-			}
-		}
+	AActor* HitActor = Hit.GetActor();
 
+	UE_LOG(LogTemp, Log, TEXT("Hit object %s"), *LineTraceEnd.ToString());
+
+	if (HitActor) {
+		USCPInteractable* InteractableActor = HitActor->FindComponentByClass<USCPInteractable>();//Pobiera wskaźnik na klasę USCPInteractable Zawartej w aktorze
+		InteractableActor->InteractWithObject(Hit, GetOwner());
 	}
 }
-
 
 
 // Called every frame

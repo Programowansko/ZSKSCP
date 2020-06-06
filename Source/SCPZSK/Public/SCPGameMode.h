@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Kacper Janas, Jakub Mrugalski
 
 #pragma once
 
@@ -59,4 +60,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "GameMode")
 	FOnActorKilled OnActorKilled;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GameMode")
+	TArray<TSubclassOf<AActor>> TilesetToSpawn;
+
+	UFUNCTION(Reliable, Server)
+	void SpawnTilesets();
+
 };

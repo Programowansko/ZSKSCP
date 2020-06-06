@@ -1,5 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Kacper Janas
 
 #include "Components/SCPAmmoComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -10,7 +10,7 @@ USCPAmmoComponent::USCPAmmoComponent()
 	AmmoCount = 0.0f;
 	AmmoInClip = 0.0f;
 
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 
@@ -18,12 +18,11 @@ USCPAmmoComponent::USCPAmmoComponent()
 void USCPAmmoComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//@TODO: Begin game with full clip
 }
 
 void USCPAmmoComponent::OnRep_Ammo()
 {
+	// Update for everyone ammo in clip
 	OnAmmoChanged.Broadcast(this, AmmoCount, AmmoInClip);
 }
 
@@ -39,6 +38,7 @@ void USCPAmmoComponent::HandleAmmoChanges(AActor* ChangedAmmoActor, float OwnerA
 
 bool USCPAmmoComponent::Reload(float AmmoPerClip)
 {
+	// Check if there is enough ammo to reload
 	if (AmmoCount <= 0.0f)
 	{
 		return false;

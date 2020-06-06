@@ -1,9 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Kacper Janas, Filip Nowicki (Voice chat)
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Voice/Public/VoiceModule.h"
+#include "Voice/Public/Interfaces/VoiceCapture.h"
+#include "Voice/Public/Interfaces/VoiceCodec.h"
 #include "SCPCharacter.generated.h"
 
 class UCameraComponent;
@@ -98,7 +102,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Items")
 	void UseItem(USCPItem* Item);
 
-	UFUNCTION(BlueprintCallable, Category = "Items")
+	UFUNCTION(Reliable, Server, BlueprintCallable, Category = "Items")
 	void EquipWeapon(TSubclassOf<ASCPWeapon> ClassOfWeaponToEquip);
 
 	// Called every frame
@@ -108,5 +112,32 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual FVector GetPawnViewLocation() const override;
+
+	// Voice chat
+	UPROPERTY()
+		float VoiceCaptureVolume;
+
+	UPROPERTY()
+		bool PlayVoiceCaptureFlag;
+
+	UPROPERTY()
+		FTimerHandle PlayVoiceCaptureTimer;
+
+	TSharedPtr<class IVoiceCapture> VoiceCapture;
+
+	UPROPERTY()
+		USoundWaveProcedural* VoiceCaptureSoundWaveProcedural;
+
+	UPROPERTY()
+		UAudioComponent* VoiceCaptureAudioComponent;
+
+	UPROPERTY()
+		TArray<uint8> VoiceCaptureBuffer;
+
+	UFUNCTION()
+		void VoiceCaptureTick();
+
+	UFUNCTION()
+		void PlayVoiceCapture();
 
 };

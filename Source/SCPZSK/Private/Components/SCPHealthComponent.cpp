@@ -1,4 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// PyraSoft - Kacper Janas, Wiktor Ludwiniak, Jakub Mrugalski, Filip Nowicki
+// Kacper Janas
 
 
 #include "Components/SCPHealthComponent.h"
@@ -9,7 +10,7 @@ USCPHealthComponent::USCPHealthComponent()
 {
 	DefaultHealth = 100;
 
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 
